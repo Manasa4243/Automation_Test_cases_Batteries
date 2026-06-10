@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Battery Automation Suite">
+    <test name="Battery Automation Tests">
+        <packages>
+            <package name="test"/>
+        </packages>
+    </test>
+</suite>

@@ -28,18 +28,21 @@ public class ViewEmployeeTest extends BaseTest {
         dashboardPage.waitForSidebarAfterLogin();
     }
 
-    @BeforeMethod
-    public void openViewEmployeePage() {
-        loginToApplication();
+  @BeforeMethod
+public void openViewEmployeePage() {
 
-        dashboardPage.clickOrganizationManagement();
-        dashboardPage.clickEmployees();
+    loginToApplication();
 
-        employeeListPage = new EmployeeListPage(driver, wait);
-        employeeListPage.openEditEmployeePage();
+    dashboardPage.clickOrganizationManagement();
+    dashboardPage.clickEmployees();
 
-        viewEmployeePage = new ViewEmployeePage(driver, wait);
-    }
+    employeeListPage = new EmployeeListPage(driver, wait);
+
+    // CLICK VIEW NOT EDIT
+    employeeListPage.openViewEmployeePage();
+
+    viewEmployeePage = new ViewEmployeePage(driver, wait);
+}
 
     @Test
     public void TC_EMP_VIEW_001_verifyViewEmployeePageLoads() {

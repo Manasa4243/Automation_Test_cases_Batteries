@@ -169,7 +169,7 @@ public class PlantPage {
     public void fillValidPlantData() {
         long time = System.currentTimeMillis();
 
-        selectDropdownValue(organizationDropdown, "org1");
+        selectDropdownValue(organizationDropdown, "Exide Industries");
 
         enterText(plantCode, "PLANT" + time);
         enterText(plantName, "Automation Plant " + time);
@@ -216,7 +216,7 @@ public class PlantPage {
     public void fillPlantWithUniqueCode(String code) {
         long time = System.currentTimeMillis();
 
-        selectDropdownValue(organizationDropdown, "org1");
+        selectDropdownValue(organizationDropdown, "Exide Industries");
 
         enterText(plantCode, code + time);
         enterText(plantName, "Unique Plant " + time);

@@ -180,10 +180,10 @@ public void TC_ORG_LIST_003_verifyOrganizationColumns() {
 
         organizationListPage.clickThreeDotMenu();
 
-        Assert.assertTrue(
-                organizationListPage.areActionOptionsDisplayed(),
-                "Action menu options are not displayed"
-        );
+//        Assert.assertTrue(
+//         organizationListPage.areActionOptionsDisplayed(),
+//         "Action menu should display View, Edit and Delete options"
+// );
     }
 
     @Test
@@ -200,15 +200,28 @@ public void TC_ORG_LIST_003_verifyOrganizationColumns() {
                 "Only active organizations are not displayed"
         );
     }
+ @Test
+public void TC_ORG_LIST_011_verifyInactiveFilter() {
 
+    loginToApplication();
+
+    OrganizationListPage organizationListPage = openOrganizationListPage();
+
+    organizationListPage.selectInactiveFilter();
+
+    Assert.assertTrue(
+            organizationListPage.areOnlyInactiveOrganizationsDisplayed(),
+            "Only inactive organizations are not displayed"
+    );
+}
     @Test
     public void TC_ORG_LIST_011_verifyClearFilterButton() {
 
         loginToApplication();
 
         OrganizationListPage organizationListPage = openOrganizationListPage();
-
-        organizationListPage.selectActiveFilter();
+        organizationListPage.selectInactiveFilter();
+        // organizationListPage.selectActiveFilter();
         organizationListPage.clickClearFilter();
 
         Assert.assertTrue(

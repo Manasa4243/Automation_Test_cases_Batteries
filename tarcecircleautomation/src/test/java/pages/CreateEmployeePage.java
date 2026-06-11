@@ -14,19 +14,35 @@ public class CreateEmployeePage {
         this.wait = wait;
     }
 
-    private By pageTitle = By.xpath("//h1[contains(normalize-space(),'Create Employee') or contains(normalize-space(),'New Employee')]");
+    private By pageTitle =
+        By.xpath("//h1[contains(normalize-space(),'New Employee')]");
 
-    private By organizationDropdown = By.xpath("//label[normalize-space()='Organization']/following::button[1]");
-    private By plantDropdown = By.xpath("//label[normalize-space()='Plant']/following::button[1]");
+private By organizationDropdown =
+        By.xpath("//label[normalize-space()='Organization']/following::button[1]");
 
-    private By employeeName = By.xpath("//input[contains(@placeholder,'name') or contains(@placeholder,'Name')]");
-    private By employeeEmail = By.xpath("//input[@type='email' or contains(@placeholder,'email')]");
-    private By phoneNumber = By.xpath("//input[contains(@placeholder,'phone') or contains(@placeholder,'Phone')]");
-    private By designation = By.xpath("//input[contains(@placeholder,'designation') or contains(@placeholder,'Designation')]");
+private By plantDropdown =
+        By.xpath("//label[normalize-space()='Plant']/following::button[1]");
 
-    private By createEmployeeBtn = By.xpath("//button[contains(@class,'bg-emerald-700') and contains(.,'Add Employee')]");
-    private By cancelBtn = By.xpath("//button[contains(normalize-space(),'Cancel')]");
+private By employeeName =
+        By.xpath("//label[normalize-space()='Employee Name']/following::input[1]");
 
+private By employeeEmail =
+        By.xpath("//label[normalize-space()='Email Address']/following::input[1]");
+
+private By phoneNumber =
+        By.xpath("//label[normalize-space()='Phone Number']/following::input[1]");
+
+private By designation =
+        By.xpath("//label[normalize-space()='Designation']/following::input[1]");
+
+private By department =
+        By.xpath("//label[normalize-space()='Department']/following::input[1]");
+
+private By createEmployeeBtn =
+        By.xpath("//button[normalize-space()='Create Employee']");
+
+private By cancelBtn =
+        By.xpath("//button[normalize-space()='Cancel']");
     private void enterText(By locator, String value) {
         WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
         element.clear();
@@ -83,18 +99,64 @@ public class CreateEmployeePage {
     }
 
     public boolean areAllFieldsVisible() {
-        try {
-            return driver.findElement(organizationDropdown).isDisplayed()
-                    && driver.findElement(plantDropdown).isDisplayed()
-                    && driver.findElement(employeeName).isDisplayed()
-                    && driver.findElement(employeeEmail).isDisplayed()
-                    && driver.findElement(phoneNumber).isDisplayed()
-                    && driver.findElement(createEmployeeBtn).isDisplayed()
-                    && driver.findElement(cancelBtn).isDisplayed();
-        } catch (Exception e) {
-            return false;
-        }
+    return isElementVisible(organizationDropdown)
+            && isElementVisible(plantDropdown)
+            && isElementVisible(employeeName)
+            && isElementVisible(employeeEmail)
+            && isElementVisible(phoneNumber)
+            && isElementVisible(designation)
+            && isElementVisible(department)
+            && isElementVisible(createEmployeeBtn)
+            && isElementVisible(cancelBtn);
+}
+public void clickPlantDropdown() {
+
+    WebElement plant = wait.until(
+            ExpectedConditions.elementToBeClickable(plantDropdown)
+    );
+
+    ((JavascriptExecutor) driver).executeScript(
+            "arguments[0].scrollIntoView({block:'center'});",
+            plant
+    );
+
+    ((JavascriptExecutor) driver).executeScript(
+            "arguments[0].click();",
+            plant
+    );
+}
+public boolean isPlantDropdownEnabled() {
+    try {
+        WebElement plant = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(plantDropdown)
+        );
+
+        return plant.isDisplayed() && plant.isEnabled();
+
+    } catch (Exception e) {
+        return false;
     }
+}
+private boolean isElementVisible(By locator) {
+    try {
+        WebElement element = wait.until(
+                ExpectedConditions.presenceOfElementLocated(locator)
+        );
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block:'center'});",
+                element
+        );
+
+        return wait.until(
+                ExpectedConditions.visibilityOf(element)
+        ).isDisplayed();
+
+    } catch (Exception e) {
+        System.out.println("Field not visible: " + locator);
+        return false;
+    }
+}
 
     public void openOrganizationDropdown() {
         clickJS(organizationDropdown);
@@ -120,10 +182,10 @@ public class CreateEmployeePage {
     public void fillValidEmployeeData() {
         long time = System.currentTimeMillis();
 
-        selectOrganization("org1");
+        selectOrganization("Exide Industries");
 
         wait.until(ExpectedConditions.elementToBeClickable(plantDropdown));
-        selectPlant("Automation Plant");
+        selectPlant("Exide_plant");
 
         enterText(employeeName, "Employee " + time);
         enterText(employeeEmail, "employee" + time + "@gmail.com");

@@ -64,7 +64,7 @@ public class PlantAddTest extends BaseTest {
         );
     }
 
-    @Test
+  @Test
     public void TC_PLANT_ADD_003_verifyOrganizationDropdownLoading() {
 
         loginToApplication();
@@ -74,7 +74,7 @@ public class PlantAddTest extends BaseTest {
         plantPage.openOrganizationDropdown();
 
         Assert.assertTrue(
-                plantPage.isDropdownOptionVisible("org1"),
+                plantPage.isDropdownOptionVisible("Exide Industries"),
                 "Organization dropdown values are not loading"
         );
     }

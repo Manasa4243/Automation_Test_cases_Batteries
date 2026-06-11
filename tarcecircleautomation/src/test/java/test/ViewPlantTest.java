@@ -13,6 +13,9 @@ public class ViewPlantTest extends BaseTest {
     private final String VALID_EMAIL = "system@tracecircle.com";
     private final String VALID_PASSWORD = "StrongPassword@123";
 
+    private final String ORGANIZATION_NAME = "Exide Industries";
+    private final String PLANT_NAME = "Exide_plant";
+
     public void loginToApplication() {
         openLoginPage();
 
@@ -25,7 +28,8 @@ public class ViewPlantTest extends BaseTest {
         dashboardPage.waitForSidebarAfterLogin();
     }
 
-    public ViewPlantPage openViewPlantPage() {
+    public ViewPlantPage openViewPlantPage(String plantName) {
+
         DashboardPage dashboardPage = new DashboardPage(driver, wait);
 
         dashboardPage.clickOrganizationManagement();
@@ -38,7 +42,8 @@ public class ViewPlantTest extends BaseTest {
                 "Plant list page is not opened"
         );
 
-        plantListPage.openViewPlant();
+        plantListPage.selectOrganizationFilter(ORGANIZATION_NAME);
+        plantListPage.openViewPlantByName(plantName);
 
         ViewPlantPage viewPlantPage = new ViewPlantPage(driver, wait);
 
@@ -54,7 +59,7 @@ public class ViewPlantTest extends BaseTest {
     public void TC_PLANT_VIEW_001_verifyViewPlantPageLoads() {
         loginToApplication();
 
-        ViewPlantPage viewPlantPage = openViewPlantPage();
+        ViewPlantPage viewPlantPage = openViewPlantPage(PLANT_NAME);
 
         Assert.assertTrue(
                 viewPlantPage.isViewPlantPageOpened(),
@@ -66,7 +71,7 @@ public class ViewPlantTest extends BaseTest {
     public void TC_PLANT_VIEW_002_verifyPlantBasicDetailsDisplay() {
         loginToApplication();
 
-        ViewPlantPage viewPlantPage = openViewPlantPage();
+        ViewPlantPage viewPlantPage = openViewPlantPage(PLANT_NAME);
 
         Assert.assertTrue(
                 viewPlantPage.areBasicDetailsDisplayed(),
@@ -78,7 +83,7 @@ public class ViewPlantTest extends BaseTest {
     public void TC_PLANT_VIEW_003_verifyOrganizationIdDisplay() {
         loginToApplication();
 
-        ViewPlantPage viewPlantPage = openViewPlantPage();
+        ViewPlantPage viewPlantPage = openViewPlantPage(PLANT_NAME);
 
         Assert.assertTrue(
                 viewPlantPage.isOrganizationIdDisplayed(),
@@ -90,7 +95,7 @@ public class ViewPlantTest extends BaseTest {
     public void TC_PLANT_VIEW_004_verifyPlantStatusDisplay() {
         loginToApplication();
 
-        ViewPlantPage viewPlantPage = openViewPlantPage();
+        ViewPlantPage viewPlantPage = openViewPlantPage(PLANT_NAME);
 
         Assert.assertTrue(
                 viewPlantPage.isStatusDisplayed(),
@@ -102,7 +107,7 @@ public class ViewPlantTest extends BaseTest {
     public void TC_PLANT_VIEW_005_verifyAddressDetailsDisplay() {
         loginToApplication();
 
-        ViewPlantPage viewPlantPage = openViewPlantPage();
+        ViewPlantPage viewPlantPage = openViewPlantPage(PLANT_NAME);
 
         Assert.assertTrue(
                 viewPlantPage.areAddressDetailsDisplayed(),
@@ -114,7 +119,7 @@ public class ViewPlantTest extends BaseTest {
     public void TC_PLANT_VIEW_006_verifyAddressLine1Display() {
         loginToApplication();
 
-        ViewPlantPage viewPlantPage = openViewPlantPage();
+        ViewPlantPage viewPlantPage = openViewPlantPage(PLANT_NAME);
 
         Assert.assertTrue(
                 viewPlantPage.isAddressLine1Displayed(),
@@ -126,7 +131,7 @@ public class ViewPlantTest extends BaseTest {
     public void TC_PLANT_VIEW_007_verifyAddressLine2Display() {
         loginToApplication();
 
-        ViewPlantPage viewPlantPage = openViewPlantPage();
+        ViewPlantPage viewPlantPage = openViewPlantPage(PLANT_NAME);
 
         Assert.assertTrue(
                 viewPlantPage.isAddressLine2Displayed(),
@@ -138,7 +143,7 @@ public class ViewPlantTest extends BaseTest {
     public void TC_PLANT_VIEW_008_verifyContactDetailsDisplay() {
         loginToApplication();
 
-        ViewPlantPage viewPlantPage = openViewPlantPage();
+        ViewPlantPage viewPlantPage = openViewPlantPage(PLANT_NAME);
 
         Assert.assertTrue(
                 viewPlantPage.areContactDetailsDisplayed(),
@@ -150,7 +155,7 @@ public class ViewPlantTest extends BaseTest {
     public void TC_PLANT_VIEW_009_verifyAuditDetailsDisplay() {
         loginToApplication();
 
-        ViewPlantPage viewPlantPage = openViewPlantPage();
+        ViewPlantPage viewPlantPage = openViewPlantPage(PLANT_NAME);
 
         Assert.assertTrue(
                 viewPlantPage.areAuditDetailsDisplayed(),
@@ -162,7 +167,7 @@ public class ViewPlantTest extends BaseTest {
     public void TC_PLANT_VIEW_010_verifyBackNavigation() {
         loginToApplication();
 
-        ViewPlantPage viewPlantPage = openViewPlantPage();
+        ViewPlantPage viewPlantPage = openViewPlantPage(PLANT_NAME);
 
         viewPlantPage.clickBackButton();
 
@@ -176,7 +181,7 @@ public class ViewPlantTest extends BaseTest {
     public void TC_PLANT_VIEW_012_verifyEmptyOptionalFieldHandling() {
         loginToApplication();
 
-        ViewPlantPage viewPlantPage = openViewPlantPage();
+        ViewPlantPage viewPlantPage = openViewPlantPage(PLANT_NAME);
 
         Assert.assertTrue(
                 viewPlantPage.isViewPlantPageOpened(),

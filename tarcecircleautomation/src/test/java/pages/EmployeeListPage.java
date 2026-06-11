@@ -342,6 +342,7 @@ public class EmployeeListPage {
         clickViewFromActionMenu();
     }
 
+    
     public boolean isPaginationWorking() {
         try {
             WebElement nextElement = wait.until(ExpectedConditions.presenceOfElementLocated(nextBtn));

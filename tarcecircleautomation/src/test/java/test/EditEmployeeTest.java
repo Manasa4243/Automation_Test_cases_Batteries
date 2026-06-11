@@ -56,16 +56,16 @@ public class EditEmployeeTest extends BaseTest {
         );
     }
 
-    @Test
-    public void TC_EMP_EDIT_003_updateOrganization() {
-        editEmployeePage.updateOrganization("124");
-        editEmployeePage.clickUpdate();
+   @Test
+public void TC_EMP_EDIT_003_updateOrganization() {
+    editEmployeePage.updateOrganization("Luminous");
+    editEmployeePage.clickUpdate();
 
-        Assert.assertTrue(
-                editEmployeePage.isReturnedToEmployeeList(),
-                "Employee organization was not updated"
-        );
-    }
+    Assert.assertTrue(
+            editEmployeePage.isReturnedToEmployeeList(),
+            "Employee organization was not updated"
+    );
+}
 
     @Test
     public void TC_EMP_EDIT_004_updatePlant() {

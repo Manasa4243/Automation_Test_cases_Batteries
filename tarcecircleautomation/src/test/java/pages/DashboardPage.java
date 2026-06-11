@@ -59,10 +59,36 @@ private By createBatchBtn =
         By.xpath("//button[contains(normalize-space(),'Create Batch')] | //button[contains(normalize-space(),'New Batch')]");
 private By batchAndProductLink =
         By.xpath("//span[normalize-space()='Batch and Product'] | //a[contains(@href,'batch-product')]");
-
+private By analyticsMenu =
+        By.xpath("//*[contains(normalize-space(),'Analytics')]");
 private By mapProductBtn =
         By.xpath("//button[contains(normalize-space(),'Map Product')]");
+private By calculatorLink =
+        By.xpath("//span[normalize-space()='Calculator'] | //a[contains(@href,'calculator')]");
 
+private By calculateBatchBtn =
+        By.xpath("//button[contains(normalize-space(),'Calculate')]");
+
+public void clickCalculator() {
+    jsClick(calculatorLink);
+}
+
+public void clickCalculateBatchFromList() {
+    jsClick(calculateBatchBtn);
+}
+
+public void openBatchImpactCalculatorPage() {
+    clickDppManagement();
+    clickCalculator();
+    clickCalculateBatchFromList();
+
+    wait.until(ExpectedConditions.or(
+            ExpectedConditions.urlContains("calculator"),
+            ExpectedConditions.presenceOfElementLocated(
+                    By.xpath("//h1[contains(normalize-space(),'Batch Impact Calculator')]")
+            )
+    ));
+}
 public void clickBatchAndProduct() {
     jsClick(batchAndProductLink);
 }
@@ -154,7 +180,31 @@ public void openCreateBatteryPage() {
                 ExpectedConditions.presenceOfElementLocated(createOrganizationBtn)
         ));
     }
+public void clickAnalytics() {
+    try {
 
+        WebElement analytics = wait.until(
+                ExpectedConditions.elementToBeClickable(analyticsMenu)
+        );
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block:'center'});",
+                analytics
+        );
+
+        Thread.sleep(500);
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].click();",
+                analytics
+        );
+
+        Thread.sleep(2000);
+
+    } catch (Exception e) {
+        throw new RuntimeException("Analytics menu not clicked", e);
+    }
+}
     public void openOrganizationsPage() {
         clickOrganizationManagement();
         clickOrganizations();

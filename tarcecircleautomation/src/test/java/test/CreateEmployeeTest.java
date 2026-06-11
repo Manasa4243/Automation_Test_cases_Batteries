@@ -71,24 +71,27 @@ public class CreateEmployeeTest extends BaseTest {
         employeePage.openOrganizationDropdown();
 
         Assert.assertTrue(
-                employeePage.isDropdownOptionVisible("org1"),
+                employeePage.isDropdownOptionVisible("Exide Industries"),
                 "Organization dropdown values are not loading"
         );
     }
 
-    @Test
-    public void TC_EMP_CREATE_004_verifyPlantDropdownDependency() {
-        loginToApplication();
+  @Test
+public void TC_EMP_CREATE_004_verifyPlantDropdownDependency() {
 
-        CreateEmployeePage employeePage = openCreateEmployeePage();
+    loginToApplication();
 
-        employeePage.selectOrganization("org1");
+    CreateEmployeePage employeePage = openCreateEmployeePage();
 
-        Assert.assertTrue(
-                true,
-                "Plant dropdown should load plants related to selected organization"
-        );
-    }
+    employeePage.selectOrganization("Exide Industries");
+
+    employeePage.clickPlantDropdown();
+
+    Assert.assertTrue(
+            employeePage.isPlantDropdownEnabled(),
+            "Plant dropdown should load plants related to selected organization"
+    );
+}
 
     @Test
     public void TC_EMP_CREATE_005_createEmployeeWithValidData() {
@@ -140,7 +143,7 @@ public class CreateEmployeeTest extends BaseTest {
 
         CreateEmployeePage employeePage = openCreateEmployeePage();
 
-        employeePage.selectOrganization("org1");
+        employeePage.selectOrganization("Exide Industries");
 
         Assert.assertTrue(
                 true,
@@ -154,8 +157,8 @@ public class CreateEmployeeTest extends BaseTest {
 
         CreateEmployeePage employeePage = openCreateEmployeePage();
 
-        employeePage.selectOrganization("org1");
-        employeePage.selectPlant("Automation Plant");
+        employeePage.selectOrganization("Exide Industries");
+        employeePage.selectPlant("Exide_plant");
 
         Assert.assertTrue(
                 true,

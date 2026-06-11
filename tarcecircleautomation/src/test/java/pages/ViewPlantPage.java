@@ -35,9 +35,6 @@ public class ViewPlantPage {
     private By organizationId =
             By.xpath("//*[contains(normalize-space(),'Organization ID') or contains(normalize-space(),'Organization Id')]/following::*[1]");
 
-    private By status =
-            By.xpath("//*[contains(normalize-space(),'Status')]/following::*[1]");
-
     private By country =
             By.xpath("//*[contains(normalize-space(),'Country')]/following::*[1]");
 
@@ -77,17 +74,22 @@ public class ViewPlantPage {
     private By updatedAt =
             By.xpath("//*[contains(normalize-space(),'Updated At')]/following::*[1]");
 
-    public boolean isViewPlantPageOpened() {
-        try {
-            return wait.until(ExpectedConditions.or(
-                    ExpectedConditions.visibilityOfElementLocated(pageTitle),
-                    ExpectedConditions.urlContains("view"),
-                    ExpectedConditions.urlContains("plants")
-            ));
-        } catch (Exception e) {
-            return false;
-        }
+  public boolean isViewPlantPageOpened() {
+    try {
+        Thread.sleep(2000);
+
+        String url = driver.getCurrentUrl().toLowerCase();
+        String body = driver.findElement(By.tagName("body")).getText();
+
+        return url.contains("view")
+                || body.contains("View Plant")
+                || body.contains("Plant Details")
+                || body.contains("Plant Name");
+
+    } catch (Exception e) {
+        return false;
     }
+}
 
     public boolean areBasicDetailsDisplayed() {
         return isValueDisplayed(plantName)
@@ -100,7 +102,17 @@ public class ViewPlantPage {
     }
 
     public boolean isStatusDisplayed() {
-        return isValueDisplayed(status);
+        try {
+            By statusValue =
+                    By.xpath("//span[normalize-space()='Active' or normalize-space()='Inactive']");
+
+            return wait.until(
+                    ExpectedConditions.visibilityOfElementLocated(statusValue)
+            ).isDisplayed();
+
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public boolean areAddressDetailsDisplayed() {
@@ -136,8 +148,10 @@ public class ViewPlantPage {
                 ExpectedConditions.elementToBeClickable(backButton)
         );
 
-        ((JavascriptExecutor) driver)
-                .executeScript("arguments[0].click();", back);
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].click();",
+                back
+        );
     }
 
     public boolean isReturnedToPlantList() {

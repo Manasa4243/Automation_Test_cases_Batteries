@@ -19,7 +19,7 @@ public class ViewEmployeePage {
     }
 
     private By pageTitle =
-            By.xpath("//h1[contains(normalize-space(),'View Employee') or contains(normalize-space(),'Employee Details')]");
+            By.xpath("//h1[contains(normalize-space(),'View Employee') ]");
 
     private By employeeName =
             By.xpath("//*[contains(normalize-space(),'Employee Name')]/following::*[1]");

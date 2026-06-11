@@ -4,6 +4,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -24,20 +25,14 @@ public class PlantListPage {
     private By tableRows =
             By.xpath("//table//tbody//tr");
 
-    private By firstRowThreeDot =
-            By.xpath("(//table//tbody//tr[1]//button[@data-slot='dropdown-menu-trigger' and @aria-haspopup='menu'])[1]");
+    private By organizationDropdown =
+            By.xpath("//button[contains(normalize-space(),'All Organizations') or contains(normalize-space(),'Organizations')]");
 
-    private By actionMenuOptions =
-            By.xpath("//*[normalize-space()='View' or normalize-space()='Edit' or normalize-space()='Delete']");
+    private By organizationSearchBox =
+            By.xpath("//input[contains(@placeholder,'Search organization')]");
 
     private By viewOption =
-            By.xpath("//*[normalize-space()='View']");
-
-    private By editOption =
-            By.xpath("//*[normalize-space()='Edit']");
-
-    private By deleteOption =
-            By.xpath("//*[normalize-space()='Delete']");
+            By.xpath("//*[contains(normalize-space(),'View')]");
 
     public boolean isPlantListPageOpened() {
         try {
@@ -49,140 +44,221 @@ public class PlantListPage {
         }
     }
 
-    public void clickThreeDots() {
+    public void selectOrganizationFilter(String organizationName) {
         try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(plantListTitle));
-            wait.until(ExpectedConditions.visibilityOfElementLocated(tableRows));
-
-            WebElement menu = wait.until(
-                    ExpectedConditions.elementToBeClickable(firstRowThreeDot)
+            WebElement dropdown = wait.until(
+                    ExpectedConditions.elementToBeClickable(organizationDropdown)
             );
 
             ((JavascriptExecutor) driver).executeScript(
                     "arguments[0].scrollIntoView({block:'center'});",
-                    menu
+                    dropdown
             );
 
-            Thread.sleep(500);
-
-            new Actions(driver)
-                    .moveToElement(menu)
-                    .pause(300)
-                    .click()
-                    .perform();
-
-            wait.until(
-                    ExpectedConditions.visibilityOfElementLocated(actionMenuOptions)
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].click();",
+                    dropdown
             );
+
+            WebElement search = wait.until(
+                    ExpectedConditions.visibilityOfElementLocated(organizationSearchBox)
+            );
+
+            search.clear();
+            search.sendKeys(organizationName);
+
+            Thread.sleep(1000);
+
+            search.sendKeys(Keys.ARROW_DOWN);
+            Thread.sleep(300);
+            search.sendKeys(Keys.ENTER);
+
+            Thread.sleep(2500);
 
         } catch (Exception e) {
-            throw new RuntimeException("Three dots menu not clicked", e);
+            throw new RuntimeException("Organization filter not selected: " + organizationName, e);
         }
     }
 
-    public boolean areActionOptionsDisplayed() {
+public void openViewPlantByName(String plantName) {
+    try {
+        By plantRow = By.xpath(
+                "//table//tbody//tr[.//*[contains(normalize-space(),'" + plantName + "')]]"
+        );
+
+        WebElement row = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(plantRow)
+        );
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block:'center'});",
+                row
+        );
+
+        Thread.sleep(1000);
+
+        WebElement threeDots = row.findElement(
+                By.xpath(".//button[@data-slot='dropdown-menu-trigger' and @aria-haspopup='menu']")
+        );
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block:'center'});",
+                threeDots
+        );
+
+        Thread.sleep(500);
+
+        new Actions(driver)
+                .moveToElement(threeDots)
+                .pause(500)
+                .click()
+                .perform();
+
+        Thread.sleep(1500);
+
+        By viewOption = By.xpath(
+                "(//*[@role='menuitem' or @data-slot='dropdown-menu-item' or self::button]"
+                + "[contains(normalize-space(.),'View')])[1]"
+        );
+
+        WebElement view = wait.until(
+                ExpectedConditions.presenceOfElementLocated(viewOption)
+        );
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block:'center'});",
+                view
+        );
+
+        Thread.sleep(500);
+
         try {
-            clickThreeDots();
-
-            return wait.until(
-                    ExpectedConditions.visibilityOfElementLocated(actionMenuOptions)
-            ).isDisplayed();
-
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    public void openEditPlant() {
-        clickThreeDots();
-        clickEditOption();
-    }
-
-    public void clickEditOption() {
-        try {
-            WebElement edit = wait.until(
-                    ExpectedConditions.elementToBeClickable(editOption)
-            );
-
-            new Actions(driver)
-                    .moveToElement(edit)
-                    .pause(300)
-                    .click()
-                    .perform();
-
-            wait.until(ExpectedConditions.or(
-                    ExpectedConditions.urlContains("edit"),
-                    ExpectedConditions.visibilityOfElementLocated(
-                            By.xpath("//h1[contains(normalize-space(),'Edit Plant') or contains(normalize-space(),'Update Plant')]")
-                    )
-            ));
-
-        } catch (Exception e) {
-            throw new RuntimeException("Edit option not clicked", e);
-        }
-    }
-
-    public void openViewPlant() {
-        clickThreeDots();
-        clickViewOption();
-    }
-
-    public void clickViewOption() {
-        try {
-            WebElement view = wait.until(
-                    ExpectedConditions.elementToBeClickable(viewOption)
-            );
-
             new Actions(driver)
                     .moveToElement(view)
                     .pause(300)
                     .click()
                     .perform();
-
-            wait.until(ExpectedConditions.or(
-                    ExpectedConditions.urlContains("view"),
-                    ExpectedConditions.visibilityOfElementLocated(
-                            By.xpath("//h1[contains(normalize-space(),'View Plant') or contains(normalize-space(),'Plant Details')]")
-                    )
-            ));
-
-        } catch (Exception e) {
-            throw new RuntimeException("View option not clicked", e);
-        }
-    }
-
-    public void openDeletePlant() {
-        clickThreeDots();
-        clickDeleteOption();
-    }
-
-    public void clickDeleteOption() {
-        try {
-            WebElement delete = wait.until(
-                    ExpectedConditions.elementToBeClickable(deleteOption)
+        } catch (Exception ex) {
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].click();",
+                    view
             );
+        }
 
+        Thread.sleep(3000);
+
+    } catch (Exception e) {
+        throw new RuntimeException("View option not opened for plant: " + plantName, e);
+    }
+}
+public void openEditPlantByName(String plantName) {
+    openPlantActionByName(plantName, "Edit");
+
+    wait.until(ExpectedConditions.or(
+            ExpectedConditions.urlContains("edit"),
+            ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath("//*[contains(normalize-space(),'Edit Plant') or contains(normalize-space(),'Update Plant')]")
+            )
+    ));
+}
+public boolean isUpdatedPlantVisible(String updatedPlantName) {
+    try {
+        By plantNameInTable = By.xpath(
+                "//table//tbody//tr//td[contains(normalize-space(),'" + updatedPlantName + "')]"
+        );
+
+        WebElement plant = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(plantNameInTable)
+        );
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block:'center'});",
+                plant
+        );
+
+        return plant.isDisplayed();
+
+    } catch (Exception e) {
+        return false;
+    }
+}
+
+public void openEditPlant() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'openEditPlant'");
+}
+private void openPlantActionByName(String plantName, String actionName) {
+    try {
+        By plantRow = By.xpath(
+                "//table//tbody//tr[.//*[contains(normalize-space(),'" + plantName + "')]]"
+        );
+
+        WebElement row = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(plantRow)
+        );
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block:'center'});",
+                row
+        );
+
+        Thread.sleep(1000);
+
+        WebElement threeDots = row.findElement(
+                By.xpath(".//button[@data-slot='dropdown-menu-trigger' and @aria-haspopup='menu']")
+        );
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block:'center'});",
+                threeDots
+        );
+
+        Thread.sleep(500);
+
+        new Actions(driver)
+                .moveToElement(threeDots)
+                .pause(500)
+                .click()
+                .perform();
+
+        Thread.sleep(1500);
+
+        By actionOption = By.xpath(
+                "(//*[@role='menuitem' or @data-slot='dropdown-menu-item' or self::button]" +
+                "[contains(normalize-space(.),'" + actionName + "')])[1]"
+        );
+
+        WebElement action = wait.until(
+                ExpectedConditions.presenceOfElementLocated(actionOption)
+        );
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block:'center'});",
+                action
+        );
+
+        Thread.sleep(500);
+
+        try {
             new Actions(driver)
-                    .moveToElement(delete)
+                    .moveToElement(action)
                     .pause(300)
                     .click()
                     .perform();
-
-            Thread.sleep(1000);
-
         } catch (Exception e) {
-            throw new RuntimeException("Delete option not clicked", e);
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].click();",
+                    action
+            );
         }
-    }
 
-    public boolean isUpdatedPlantVisible(String plantName) {
-        try {
-            By plant = By.xpath("//*[contains(normalize-space(),'" + plantName + "')]");
-            return wait.until(
-                    ExpectedConditions.visibilityOfElementLocated(plant)
-            ).isDisplayed();
-        } catch (Exception e) {
-            return false;
-        }
+        Thread.sleep(2500);
+
+    } catch (Exception e) {
+        throw new RuntimeException(
+                actionName + " option not opened for plant: " + plantName,
+                e
+        );
     }
+}
 }

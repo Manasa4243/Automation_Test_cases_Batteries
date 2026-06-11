@@ -13,6 +13,9 @@ public class EditPlantTest extends BaseTest {
     private final String VALID_EMAIL = "system@tracecircle.com";
     private final String VALID_PASSWORD = "StrongPassword@123";
 
+    private final String ORGANIZATION_NAME = "Exide Industries";
+    private final String PLANT_NAME = "Exide_plant";
+
     public void loginToApplication() {
         openLoginPage();
 
@@ -27,31 +30,30 @@ public class EditPlantTest extends BaseTest {
 
     public EditPlantPage openEditPlantPage() {
 
-    DashboardPage dashboardPage = new DashboardPage(driver, wait);
+        DashboardPage dashboardPage = new DashboardPage(driver, wait);
 
-    dashboardPage.clickOrganizationManagement();
-    dashboardPage.clickPlants();
+        dashboardPage.clickOrganizationManagement();
+        dashboardPage.clickPlants();
 
-    PlantListPage plantListPage = new PlantListPage(driver, wait);
+        PlantListPage plantListPage = new PlantListPage(driver, wait);
 
-    Assert.assertTrue(
-            plantListPage.isPlantListPageOpened(),
-            "Plant list page is not opened"
-    );
+        Assert.assertTrue(
+                plantListPage.isPlantListPageOpened(),
+                "Plant list page is not opened"
+        );
 
-    // New flow:
-    // click 3 dots → wait → click Edit
-    plantListPage.openEditPlant();
+        plantListPage.selectOrganizationFilter(ORGANIZATION_NAME);
+        plantListPage.openEditPlantByName(PLANT_NAME);
 
-    EditPlantPage editPlantPage = new EditPlantPage(driver, wait);
+        EditPlantPage editPlantPage = new EditPlantPage(driver, wait);
 
-    Assert.assertTrue(
-            editPlantPage.isEditPlantPageOpened(),
-            "Edit Plant page is not opened"
-    );
+        Assert.assertTrue(
+                editPlantPage.isEditPlantPageOpened(),
+                "Edit Plant page is not opened"
+        );
 
-    return editPlantPage;
-}
+        return editPlantPage;
+    }
 
     @Test
     public void TC_PLANT_EDIT_001_verifyEditPlantPageLoads() {
@@ -59,8 +61,10 @@ public class EditPlantTest extends BaseTest {
 
         EditPlantPage editPlantPage = openEditPlantPage();
 
-        Assert.assertTrue(editPlantPage.isEditPlantPageOpened(),
-                "Edit Plant page should load successfully");
+        Assert.assertTrue(
+                editPlantPage.isEditPlantPageOpened(),
+                "Edit Plant page should load successfully"
+        );
     }
 
     @Test
@@ -69,8 +73,10 @@ public class EditPlantTest extends BaseTest {
 
         EditPlantPage editPlantPage = openEditPlantPage();
 
-        Assert.assertTrue(editPlantPage.isPrefilledDataDisplayed(),
-                "Existing plant data is not prefilled");
+        Assert.assertTrue(
+                editPlantPage.isPrefilledDataDisplayed(),
+                "Existing plant data is not prefilled"
+        );
     }
 
     @Test
@@ -79,25 +85,29 @@ public class EditPlantTest extends BaseTest {
 
         EditPlantPage editPlantPage = openEditPlantPage();
 
-        editPlantPage.updateOrganization("Battery_Org");
+        editPlantPage.updateOrganization("Exide Industries");
         editPlantPage.clickUpdate();
 
-        Assert.assertTrue(editPlantPage.isReturnedToPlantList(),
-                "Organization was not updated");
+        Assert.assertTrue(
+                editPlantPage.isReturnedToPlantList(),
+                "Organization was not updated"
+        );
     }
 
     @Test
-public void TC_PLANT_EDIT_004_updatePlantCode() {
-    loginToApplication();
+    public void TC_PLANT_EDIT_004_updatePlantCode() {
+        loginToApplication();
 
-    EditPlantPage editPlantPage = openEditPlantPage();
+        EditPlantPage editPlantPage = openEditPlantPage();
 
-    editPlantPage.updatePlantCode("zudio_api_testing189" + System.currentTimeMillis());
-    editPlantPage.clickUpdate();
+        editPlantPage.updatePlantCode("EXIDE_PLANT_" + System.currentTimeMillis());
+        editPlantPage.clickUpdate();
 
-    Assert.assertTrue(editPlantPage.isReturnedToPlantList(),
-            "Plant code was not updated");
-}
+        Assert.assertTrue(
+                editPlantPage.isReturnedToPlantList(),
+                "Plant code was not updated"
+        );
+    }
 
     @Test
     public void TC_PLANT_EDIT_005_updatePlantName() {
@@ -105,11 +115,13 @@ public void TC_PLANT_EDIT_004_updatePlantCode() {
 
         EditPlantPage editPlantPage = openEditPlantPage();
 
-        editPlantPage.updatePlantName("Trace_circle_updated");
+        editPlantPage.updatePlantName("Exide_plant");
         editPlantPage.clickUpdate();
 
-        Assert.assertTrue(editPlantPage.isReturnedToPlantList(),
-                "Plant name was not updated");
+        Assert.assertTrue(
+                editPlantPage.isReturnedToPlantList(),
+                "Plant name was not updated"
+        );
     }
 
     @Test
@@ -121,8 +133,10 @@ public void TC_PLANT_EDIT_004_updatePlantCode() {
         editPlantPage.updateAddressLine1("Updated address line 1");
         editPlantPage.clickUpdate();
 
-        Assert.assertTrue(editPlantPage.isReturnedToPlantList(),
-                "Address line 1 was not updated");
+        Assert.assertTrue(
+                editPlantPage.isReturnedToPlantList(),
+                "Address line 1 was not updated"
+        );
     }
 
     @Test
@@ -134,8 +148,10 @@ public void TC_PLANT_EDIT_004_updatePlantCode() {
         editPlantPage.updateAddressLine2("Updated address line 2");
         editPlantPage.clickUpdate();
 
-        Assert.assertTrue(editPlantPage.isReturnedToPlantList(),
-                "Address line 2 was not updated");
+        Assert.assertTrue(
+                editPlantPage.isReturnedToPlantList(),
+                "Address line 2 was not updated"
+        );
     }
 
     @Test
@@ -147,8 +163,10 @@ public void TC_PLANT_EDIT_004_updatePlantCode() {
         editPlantPage.updateLocation("India", "Karnataka", "Bengaluru");
         editPlantPage.clickUpdate();
 
-        Assert.assertTrue(editPlantPage.isReturnedToPlantList(),
-                "Location was not updated");
+        Assert.assertTrue(
+                editPlantPage.isReturnedToPlantList(),
+                "Location was not updated"
+        );
     }
 
     @Test
@@ -160,8 +178,10 @@ public void TC_PLANT_EDIT_004_updatePlantCode() {
         editPlantPage.updatePostalCode("560001");
         editPlantPage.clickUpdate();
 
-        Assert.assertTrue(editPlantPage.isReturnedToPlantList(),
-                "Postal code was not updated");
+        Assert.assertTrue(
+                editPlantPage.isReturnedToPlantList(),
+                "Postal code was not updated"
+        );
     }
 
     @Test
@@ -173,8 +193,10 @@ public void TC_PLANT_EDIT_004_updatePlantCode() {
         editPlantPage.updateContactPersonName("Manasa Gowda Updated");
         editPlantPage.clickUpdate();
 
-        Assert.assertTrue(editPlantPage.isReturnedToPlantList(),
-                "Contact person name was not updated");
+        Assert.assertTrue(
+                editPlantPage.isReturnedToPlantList(),
+                "Contact person name was not updated"
+        );
     }
 
     @Test
@@ -186,8 +208,10 @@ public void TC_PLANT_EDIT_004_updatePlantCode() {
         editPlantPage.updateContactEmail("plantupdated" + System.currentTimeMillis() + "@gmail.com");
         editPlantPage.clickUpdate();
 
-        Assert.assertTrue(editPlantPage.isReturnedToPlantList(),
-                "Contact email was not updated");
+        Assert.assertTrue(
+                editPlantPage.isReturnedToPlantList(),
+                "Contact email was not updated"
+        );
     }
 
     @Test
@@ -199,8 +223,10 @@ public void TC_PLANT_EDIT_004_updatePlantCode() {
         editPlantPage.updatePhoneNumber("9876543210");
         editPlantPage.clickUpdate();
 
-        Assert.assertTrue(editPlantPage.isReturnedToPlantList(),
-                "Phone number was not updated");
+        Assert.assertTrue(
+                editPlantPage.isReturnedToPlantList(),
+                "Phone number was not updated"
+        );
     }
 
     @Test
@@ -211,28 +237,36 @@ public void TC_PLANT_EDIT_004_updatePlantCode() {
 
         editPlantPage.clickCancel();
 
-        Assert.assertTrue(editPlantPage.isReturnedToPlantList(),
-                "Cancel did not return user to plant list");
-    }
-
-    @Test
-    public void TC_PLANT_EDIT_014_verifyUpdatedPlantInList() {
-        loginToApplication();
-
-        String updatedPlantName = "Trace_circle_updated_" + System.currentTimeMillis();
-
-        EditPlantPage editPlantPage = openEditPlantPage();
-
-        editPlantPage.updatePlantName(updatedPlantName);
-        editPlantPage.clickUpdate();
-
-        PlantListPage plantListPage = new PlantListPage(driver, wait);
-
         Assert.assertTrue(
-                plantListPage.isUpdatedPlantVisible(updatedPlantName),
-                "Updated plant is not visible in plant list"
+                editPlantPage.isReturnedToPlantList(),
+                "Cancel did not return user to plant list"
         );
     }
+
+   @Test
+public void TC_PLANT_EDIT_014_verifyUpdatedPlantInList() {
+
+    loginToApplication();
+
+    EditPlantPage editPlantPage = openEditPlantPage();
+
+    editPlantPage.updatePlantName("Exide_plant");
+    editPlantPage.clickUpdate();
+
+    PlantListPage plantListPage = new PlantListPage(driver, wait);
+
+    Assert.assertTrue(
+            plantListPage.isPlantListPageOpened(),
+            "Plant list page is not opened after update"
+    );
+
+    plantListPage.selectOrganizationFilter("Exide Industries");
+
+    Assert.assertTrue(
+            plantListPage.isUpdatedPlantVisible("Exide_plant"),
+            "Updated plant is not visible in plant list after selecting Exide Industries"
+    );
+}
 
     @Test
     public void TC_PLANT_EDIT_015_verifyDependentDropdownFunctionality() {
@@ -242,7 +276,9 @@ public void TC_PLANT_EDIT_004_updatePlantCode() {
 
         editPlantPage.updateLocation("India", "Karnataka", "Bengaluru");
 
-        Assert.assertTrue(true,
-                "Dependent country/state/city dropdowns loaded correctly");
+        Assert.assertTrue(
+                true,
+                "Dependent country/state/city dropdowns loaded correctly"
+        );
     }
 }

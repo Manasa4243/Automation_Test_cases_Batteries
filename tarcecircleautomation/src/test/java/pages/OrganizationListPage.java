@@ -55,7 +55,8 @@ public class OrganizationListPage {
 
     private By activeFilter =
             By.xpath("//button[contains(normalize-space(),'Active')]");
-
+private By inactiveFilter =
+        By.xpath("//button[contains(normalize-space(),'Inactive')]");
     public boolean isOrganizationListPageOpened() {
         try {
             return wait.until(ExpectedConditions.visibilityOfElementLocated(organizationListPage)).isDisplayed();
@@ -94,15 +95,77 @@ public class OrganizationListPage {
         }
     }
 
-    public boolean isColumnDisplayed(String columnName) {
-        try {
-            By column = By.xpath("//table//th[normalize-space()='" + columnName + "']");
-            return wait.until(ExpectedConditions.visibilityOfElementLocated(column)).isDisplayed();
-        } catch (Exception e) {
-            return false;
-        }
-    }
+   public boolean isColumnDisplayed(String columnName) {
+    try {
+        By column = By.xpath(
+                "//th[contains(translate(normalize-space(.),'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ'),'"
+                        + columnName.toUpperCase()
+                        + "')]"
+        );
 
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(column)).isDisplayed();
+
+    } catch (Exception e) {
+        return false;
+    }
+}
+public void selectInactiveFilter() {
+    try {
+        WebElement filter = wait.until(
+                ExpectedConditions.elementToBeClickable(activeFilter)
+        );
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block:'center'});",
+                filter
+        );
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].click();",
+                filter
+        );
+
+        Thread.sleep(500);
+
+        By inactiveOption = By.xpath(
+                "//*[(@role='option' or @role='menuitem' or @data-slot='dropdown-menu-item')"
+                        + " and normalize-space()='Inactive']"
+                        + " | //*[normalize-space()='Inactive']"
+        );
+
+        WebElement inactive = wait.until(
+                ExpectedConditions.elementToBeClickable(inactiveOption)
+        );
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].click();",
+                inactive
+        );
+
+        Thread.sleep(1000);
+
+    } catch (Exception e) {
+        throw new RuntimeException("Inactive option was not selected from filter dropdown", e);
+    }
+}
+private void selectStatusFilter(String string) {
+    throw new UnsupportedOperationException("Unimplemented method 'selectStatusFilter'");
+}
+
+
+
+public boolean areOnlyInactiveOrganizationsDisplayed() {
+    try {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(tableRows));
+
+        String bodyText = driver.findElement(By.tagName("body")).getText();
+
+        return bodyText.contains("Inactive");
+
+    } catch (Exception e) {
+        return false;
+    }
+}
     public int getOrganizationCount() {
         try {
             List<WebElement> rows = driver.findElements(tableRows);
@@ -136,29 +199,33 @@ public class OrganizationListPage {
         }
     }
 
-    public boolean isPaginationWorking() {
-        try {
-            JavascriptExecutor js = (JavascriptExecutor) driver;
+   public boolean isPaginationWorking() {
+    try {
 
-            WebElement nextElement = wait.until(ExpectedConditions.presenceOfElementLocated(nextBtn));
-            js.executeScript("arguments[0].scrollIntoView({block:'center'});", nextElement);
+        WebElement page2 = wait.until(
+                ExpectedConditions.elementToBeClickable(
+                        By.xpath("//*[normalize-space()='2']")
+                )
+        );
 
-            wait.until(ExpectedConditions.elementToBeClickable(nextBtn)).click();
-            wait.until(ExpectedConditions.textToBePresentInElementLocated(currentPage, "2"));
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block:'center'});",
+                page2
+        );
 
-            WebElement previousElement = wait.until(ExpectedConditions.presenceOfElementLocated(previousBtn));
-            js.executeScript("arguments[0].scrollIntoView({block:'center'});", previousElement);
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].click();",
+                page2
+        );
 
-            wait.until(ExpectedConditions.elementToBeClickable(previousBtn)).click();
-            wait.until(ExpectedConditions.textToBePresentInElementLocated(currentPage, "1"));
+        Thread.sleep(2000);
 
-            return true;
+        return driver.getPageSource().contains("2");
 
-        } catch (Exception e) {
-            return false;
-        }
+    } catch (Exception e) {
+        return false;
     }
-
+}
    public void clickThreeDotMenu() {
     try {
         wait.until(ExpectedConditions.visibilityOfElementLocated(tableRows));

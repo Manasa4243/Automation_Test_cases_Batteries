@@ -60,23 +60,71 @@ public class EditEmployeePage {
     }
 
     private void selectDropdownValue(By dropdown, String value) {
-        WebElement dropdownElement = wait.until(ExpectedConditions.elementToBeClickable(dropdown));
+    try {
+        WebElement dropdownElement = wait.until(
+                ExpectedConditions.elementToBeClickable(dropdown)
+        );
 
         ((JavascriptExecutor) driver).executeScript(
                 "arguments[0].scrollIntoView({block:'center'});",
                 dropdownElement
         );
 
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", dropdownElement);
+        Thread.sleep(500);
 
-        By option = By.xpath(
-                "//*[self::div or self::span or self::li or self::button]" +
-                "[normalize-space()='" + value + "' or contains(normalize-space(),'" + value + "')]"
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].click();",
+                dropdownElement
         );
 
-        WebElement optionElement = wait.until(ExpectedConditions.elementToBeClickable(option));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", optionElement);
+        Thread.sleep(1000);
+
+        // Search inside dropdown if search box is available
+        try {
+            By searchBox = By.xpath(
+                    "//input[contains(@placeholder,'Search') or contains(@placeholder,'search')]"
+            );
+
+            WebElement search = wait.until(
+                    ExpectedConditions.visibilityOfElementLocated(searchBox)
+            );
+
+            search.clear();
+            search.sendKeys(value);
+
+            Thread.sleep(1000);
+
+        } catch (Exception ignored) {
+        }
+
+        By option = By.xpath(
+                "//*[self::div or self::span or self::li or self::button or @role='option' or @role='menuitem']" +
+                "[contains(translate(normalize-space(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '" +
+                value.toLowerCase() + "')]"
+        );
+
+        WebElement optionElement = wait.until(
+                ExpectedConditions.presenceOfElementLocated(option)
+        );
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block:'center'});",
+                optionElement
+        );
+
+        Thread.sleep(500);
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].click();",
+                optionElement
+        );
+
+        Thread.sleep(1000);
+
+    } catch (Exception e) {
+        throw new RuntimeException("Dropdown value not selected: " + value, e);
     }
+}
 
     public boolean isEditEmployeePageOpened() {
         try {

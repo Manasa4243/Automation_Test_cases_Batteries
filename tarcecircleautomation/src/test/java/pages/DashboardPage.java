@@ -60,7 +60,12 @@ private By createBatchBtn =
 private By batchAndProductLink =
         By.xpath("//span[normalize-space()='Batch and Product'] | //a[contains(@href,'batch-product')]");
 private By analyticsMenu =
-        By.xpath("//*[contains(normalize-space(),'Analytics')]");
+        By.xpath(
+            "//span[normalize-space()='Analytics']"
+          + " | //a[contains(@href,'analytics')]"
+          + " | //p[normalize-space()='Analytics']"
+          + " | //div[normalize-space()='Analytics']"
+        );
 private By mapProductBtn =
         By.xpath("//button[contains(normalize-space(),'Map Product')]");
 private By calculatorLink =
@@ -181,10 +186,11 @@ public void openCreateBatteryPage() {
         ));
     }
 public void clickAnalytics() {
+
     try {
 
         WebElement analytics = wait.until(
-                ExpectedConditions.elementToBeClickable(analyticsMenu)
+                ExpectedConditions.presenceOfElementLocated(analyticsMenu)
         );
 
         ((JavascriptExecutor) driver).executeScript(
@@ -192,18 +198,38 @@ public void clickAnalytics() {
                 analytics
         );
 
-        Thread.sleep(500);
+        Thread.sleep(1000);
+
+        wait.until(ExpectedConditions.visibilityOf(analytics));
 
         ((JavascriptExecutor) driver).executeScript(
                 "arguments[0].click();",
                 analytics
         );
 
-        Thread.sleep(2000);
+        wait.until(ExpectedConditions.or(
+                ExpectedConditions.urlContains("analytics"),
+                ExpectedConditions.presenceOfElementLocated(
+                        By.xpath("//*[contains(normalize-space(),'Analytics')]")
+                )
+        ));
 
     } catch (Exception e) {
         throw new RuntimeException("Analytics menu not clicked", e);
     }
+}
+public void openAnalyticsPage() {
+
+    waitForSidebarAfterLogin();
+
+    clickAnalytics();
+
+    wait.until(ExpectedConditions.or(
+            ExpectedConditions.urlContains("analytics"),
+            ExpectedConditions.presenceOfElementLocated(
+                    By.xpath("//*[contains(normalize-space(),'Analytics')]")
+            )
+    ));
 }
     public void openOrganizationsPage() {
         clickOrganizationManagement();

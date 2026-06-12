@@ -4,12 +4,12 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class SuperAdminAnalyticsPage {
+public class SuperAdminAnalyticsNewPage {
 
     WebDriver driver;
     WebDriverWait wait;
 
-    public SuperAdminAnalyticsPage(WebDriver driver, WebDriverWait wait) {
+    public SuperAdminAnalyticsNewPage(WebDriver driver, WebDriverWait wait) {
         this.driver = driver;
         this.wait = wait;
     }
@@ -34,9 +34,7 @@ public class SuperAdminAnalyticsPage {
             );
 
             Thread.sleep(1000);
-
             ((JavascriptExecutor) driver).executeScript("window.scrollBy(0,-100);");
-
             Thread.sleep(500);
 
         } catch (Exception e) {
@@ -171,7 +169,21 @@ public class SuperAdminAnalyticsPage {
             return false;
         }
     }
+public void scrollDownTwice() {
+    try {
 
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+
+        js.executeScript("window.scrollBy(0,1500)");
+        Thread.sleep(2000);
+
+        js.executeScript("window.scrollBy(0,1500)");
+        Thread.sleep(2000);
+
+    } catch (Exception e) {
+        throw new RuntimeException("Unable to scroll down", e);
+    }
+}
     public boolean isScriptNotExecuted() {
         try {
             String body = driver.findElement(By.tagName("body")).getText();

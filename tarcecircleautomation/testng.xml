@@ -6,3 +6,12 @@
         </packages>
     </test>
 </suite>
+<!-- <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+
+<suite name="Battery Automation Suite">
+    <test name="Super Admin Analytics Tests">
+        <classes>
+            <class name="test.SuperAdminAnalyticsTest"/>
+        </classes>
+    </test>
+</suite> -->

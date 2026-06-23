@@ -1,6 +1,10 @@
 package pages;
 
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -18,19 +22,19 @@ public class CreateBatchPage {
             By.xpath("//*[contains(normalize-space(),'New Batch') or contains(normalize-space(),'Create Batch')]");
 
     private By organizationDropdown =
-        By.xpath("//label[normalize-space()='Organization']/following::button[1]");
+            By.xpath("//*[normalize-space()='Select organization']");
 
-private By plantDropdown =
-        By.xpath("//label[normalize-space()='Plant']/following::button[1]");
+    private By plantDropdown =
+            By.xpath("//*[normalize-space()='Select organization first' or normalize-space()='Select plant']");
 
     private By productGtinInput =
-            By.xpath("//label[contains(normalize-space(),'Product GTIN') or contains(normalize-space(),'GTIN')]/following::input[1]");
+            By.xpath("//input[@placeholder='Enter GTIN Number']");
 
     private By batchNameInput =
-            By.xpath("//label[contains(normalize-space(),'Batch Name')]/following::input[1]");
+            By.xpath("//input[@placeholder='Enter batch name']");
 
     private By productQuantityInput =
-            By.xpath("//label[contains(normalize-space(),'Product Quantity') or contains(normalize-space(),'Quantity')]/following::input[1]");
+            By.xpath("//input[@placeholder='Enter quantity']");
 
     private By createBatchBtn =
             By.xpath("//button[contains(normalize-space(),'Create Batch')]");
@@ -42,41 +46,57 @@ private By plantDropdown =
             By.xpath("//button[.//*[name()='svg']] | //button[contains(@aria-label,'Back')]");
 
     private void jsClick(By locator) {
+        try {
+            WebElement element = wait.until(
+                    ExpectedConditions.elementToBeClickable(locator)
+            );
 
-        WebElement element = wait.until(
-                ExpectedConditions.elementToBeClickable(locator)
-        );
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].scrollIntoView({block:'center'});",
+                    element
+            );
 
-        ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].scrollIntoView({block:'center'});",
-                element
-        );
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].click();",
+                    element
+            );
 
-        ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].click();",
-                element
-        );
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to click element: " + locator, e);
+        }
     }
 
     private void enterText(By locator, String value) {
-        WebElement element = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(locator)
-        );
+        try {
+            WebElement element = wait.until(
+                    ExpectedConditions.elementToBeClickable(locator)
+            );
 
-        element.clear();
-        element.sendKeys(value);
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].scrollIntoView({block:'center'});",
+                    element
+            );
+
+            Thread.sleep(300);
+
+            element.click();
+            element.sendKeys(Keys.CONTROL + "a");
+            element.sendKeys(Keys.DELETE);
+            element.sendKeys(value);
+
+            Thread.sleep(300);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to enter text: " + value, e);
+        }
     }
 
-   private void selectDropdownValue(By dropdown, String value) {
+    private void selectDropdownValue(By dropdown, String value) {
 
     try {
+
         WebElement dropdownElement = wait.until(
                 ExpectedConditions.elementToBeClickable(dropdown)
-        );
-
-        ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].scrollIntoView({block:'center'});",
-                dropdownElement
         );
 
         ((JavascriptExecutor) driver).executeScript(
@@ -84,69 +104,30 @@ private By plantDropdown =
                 dropdownElement
         );
 
-        Thread.sleep(500);
-
-        By searchInput = By.xpath(
-                "//input[contains(@placeholder,'Search organization')]" +
-                " | //input[contains(@placeholder,'Search')]" +
-                " | //input[@role='combobox']"
+        By searchBox = By.xpath(
+                "//input[contains(@placeholder,'Search')]"
         );
 
         WebElement search = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(searchInput)
-        );
-search.sendKeys(value);
-Thread.sleep(1000);
-search.sendKeys(Keys.ENTER);
-Thread.sleep(1000);
-    } catch (Exception e) {
-        throw new RuntimeException("Dropdown value not selected: " + value, e);
-    }
-}
-private void selectPlantDropdownValue(By dropdown, String value) {
-
-    try {
-
-        WebElement dropdownElement = wait.until(
-                ExpectedConditions.elementToBeClickable(dropdown)
+                ExpectedConditions.visibilityOfElementLocated(searchBox)
         );
 
-        ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].scrollIntoView({block:'center'});",
-                dropdownElement
-        );
-
-        ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].click();",
-                dropdownElement
-        );
+        search.sendKeys(value);
 
         Thread.sleep(1000);
 
-        By option = By.xpath(
-            "//div[@role='option' and contains(.,'" + value + "')]"
-            + " | //li[contains(.,'" + value + "')]"
-            + " | //span[contains(.,'" + value + "')]"
-        );
-
-        WebElement plantOption = wait.until(
-                ExpectedConditions.elementToBeClickable(option)
-        );
-
-        ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].click();",
-                plantOption
-        );
+        search.sendKeys(Keys.ENTER);
 
         Thread.sleep(1000);
 
     } catch (Exception e) {
         throw new RuntimeException(
-                "Plant dropdown value not selected: " + value,
+                "Dropdown value not selected: " + value,
                 e
         );
     }
 }
+
     public boolean isCreateBatchPageOpened() {
         try {
             return wait.until(ExpectedConditions.or(
@@ -171,25 +152,6 @@ private void selectPlantDropdownValue(By dropdown, String value) {
             return false;
         }
     }
-    public boolean isOrganizationSelected(String orgName) {
-
-    try {
-
-        WebElement org = wait.until(
-                ExpectedConditions.presenceOfElementLocated(organizationDropdown)
-        );
-
-        String text = org.getAttribute("textContent");
-
-        System.out.println("Selected Org = " + text);
-
-        return text != null &&
-               text.toLowerCase().contains(orgName.toLowerCase());
-
-    } catch (Exception e) {
-        return false;
-    }
-}
 
     public void openOrganizationDropdown() {
         jsClick(organizationDropdown);
@@ -204,17 +166,28 @@ private void selectPlantDropdownValue(By dropdown, String value) {
         }
     }
 
-   public void selectOrganization(String orgName) {
-
-    selectDropdownValue(organizationDropdown, orgName);
-
-}
+    public void selectOrganization(String orgName) {
+        selectDropdownValue(organizationDropdown, orgName);
+    }
 
     public void selectPlant(String plantName) {
-        selectPlantDropdownValue(plantDropdown, plantName);
-       
-}
-    
+        selectDropdownValue(plantDropdown, plantName);
+    }
+
+    public boolean isOrganizationSelected(String orgName) {
+        try {
+            WebElement org = wait.until(
+                    ExpectedConditions.presenceOfElementLocated(organizationDropdown)
+            );
+
+            String text = org.getAttribute("textContent");
+
+            return text != null && text.toLowerCase().contains(orgName.toLowerCase());
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     public boolean isPlantDropdownEnabled() {
         try {
@@ -224,38 +197,34 @@ private void selectPlantDropdownValue(By dropdown, String value) {
 
             String disabled = plant.getAttribute("disabled");
             String ariaDisabled = plant.getAttribute("aria-disabled");
+            String className = plant.getAttribute("class");
 
-            return plant.isEnabled()
+            return plant.isDisplayed()
+                    && plant.isEnabled()
                     && (disabled == null || disabled.equals("false"))
-                    && (ariaDisabled == null || ariaDisabled.equals("false"));
+                    && (ariaDisabled == null || ariaDisabled.equals("false"))
+                    && !className.contains("disabled")
+                    && !className.contains("opacity-50");
 
         } catch (Exception e) {
             return false;
         }
     }
-public boolean isPlantSelected(String plantName) {
 
-    try {
-        WebElement plant = wait.until(
-                ExpectedConditions.presenceOfElementLocated(plantDropdown)
-        );
+    public boolean isPlantSelected(String plantName) {
+        try {
+            WebElement plant = wait.until(
+                    ExpectedConditions.presenceOfElementLocated(plantDropdown)
+            );
 
-        String selectedText = plant.getText();
-        String textContent = plant.getAttribute("textContent");
-        String innerText = plant.getAttribute("innerText");
+            String text = plant.getAttribute("textContent");
 
-        System.out.println("Plant getText = " + selectedText);
-        System.out.println("Plant textContent = " + textContent);
-        System.out.println("Plant innerText = " + innerText);
+            return text != null && text.toLowerCase().contains(plantName.toLowerCase());
 
-        return (selectedText != null && selectedText.contains(plantName))
-                || (textContent != null && textContent.contains(plantName))
-                || (innerText != null && innerText.contains(plantName));
-
-    } catch (Exception e) {
-        return false;
+        } catch (Exception e) {
+            return false;
+        }
     }
-}
 
     public void enterProductGtin(String gtin) {
         enterText(productGtinInput, gtin);
@@ -271,8 +240,7 @@ public boolean isPlantSelected(String plantName) {
 
     public boolean isProductGtinAccepted(String gtin) {
         try {
-            return wait.until(ExpectedConditions
-                    .attributeToBe(productGtinInput, "value", gtin));
+            return wait.until(ExpectedConditions.attributeToBe(productGtinInput, "value", gtin));
         } catch (Exception e) {
             return false;
         }
@@ -280,8 +248,7 @@ public boolean isPlantSelected(String plantName) {
 
     public boolean isBatchNameAccepted(String batchName) {
         try {
-            return wait.until(ExpectedConditions
-                    .attributeToBe(batchNameInput, "value", batchName));
+            return wait.until(ExpectedConditions.attributeToBe(batchNameInput, "value", batchName));
         } catch (Exception e) {
             return false;
         }
@@ -289,8 +256,7 @@ public boolean isPlantSelected(String plantName) {
 
     public boolean isQuantityAccepted(String quantity) {
         try {
-            return wait.until(ExpectedConditions
-                    .attributeToBe(productQuantityInput, "value", quantity));
+            return wait.until(ExpectedConditions.attributeToBe(productQuantityInput, "value", quantity));
         } catch (Exception e) {
             return false;
         }
@@ -299,8 +265,9 @@ public boolean isPlantSelected(String plantName) {
     public void fillValidBatchData() {
         selectOrganization("Battery_Org");
         selectPlant("Battery_Plant");
+
         enterProductGtin("BPAN-2026-001");
-        enterBatchName("Batch_Auto_001");
+        enterBatchName("Batch_Auto_" + System.currentTimeMillis());
         enterProductQuantity("100");
     }
 
@@ -350,4 +317,58 @@ public boolean isPlantSelected(String plantName) {
             return false;
         }
     }
+    public void fillAllValidBatchData() {
+    selectOrganization("Exide");
+    selectPlant("Exide Plant");
+    enterProductGtin("BPAN-2026-001");
+    enterBatchName("Batch_Auto_" + System.currentTimeMillis());
+    enterProductQuantity("2");
+}
+
+public boolean isValidationDisplayed() {
+    try {
+        String text = driver.getPageSource().toLowerCase();
+
+        return text.contains("required")
+                || text.contains("invalid")
+                || text.contains("duplicate")
+                || text.contains("already")
+                || text.contains("must")
+                || text.contains("error")
+                || text.contains("please");
+    } catch (Exception e) {
+        return false;
+    }
+}
+
+public void scrollToFirstValidationError() {
+    try {
+        By errorLocator = By.xpath(
+                "//*[contains(@class,'error') " +
+                "or contains(@class,'invalid') " +
+                "or contains(@class,'destructive') " +
+                "or contains(text(),'Required') " +
+                "or contains(text(),'required') " +
+                "or contains(text(),'Invalid') " +
+                "or contains(text(),'invalid')]"
+        );
+
+        WebElement error = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(errorLocator)
+        );
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block:'center'});",
+                error
+        );
+
+    } catch (Exception e) {
+        ((JavascriptExecutor) driver).executeScript("window.scrollTo(0,0);");
+    }
+}
+
+public void submitAndScrollToError() {
+    clickCreateBatch();
+    scrollToFirstValidationError();
+}
 }

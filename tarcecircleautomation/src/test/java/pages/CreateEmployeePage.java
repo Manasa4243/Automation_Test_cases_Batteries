@@ -1,6 +1,10 @@
 package pages;
 
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -15,48 +19,86 @@ public class CreateEmployeePage {
     }
 
     private By pageTitle =
-        By.xpath("//h1[contains(normalize-space(),'New Employee')]");
+            By.xpath("//h1[contains(normalize-space(),'New Employee')]");
 
-private By organizationDropdown =
-        By.xpath("//label[normalize-space()='Organization']/following::button[1]");
+    private By organizationDropdown =
+            By.xpath("//*[normalize-space()='Select organization']");
 
-private By plantDropdown =
-        By.xpath("//label[normalize-space()='Plant']/following::button[1]");
+    private By plantDropdown =
+            By.xpath("//*[normalize-space()='Select organization first' or normalize-space()='Select plant']");
 
-private By employeeName =
-        By.xpath("//label[normalize-space()='Employee Name']/following::input[1]");
+    private By employeeName =
+            By.xpath("//input[@placeholder='Enter employee name']");
 
-private By employeeEmail =
-        By.xpath("//label[normalize-space()='Email Address']/following::input[1]");
+    private By employeeEmail =
+            By.xpath("//input[@placeholder='Enter email address']");
 
-private By phoneNumber =
-        By.xpath("//label[normalize-space()='Phone Number']/following::input[1]");
+    private By phoneNumber =
+            By.xpath("//input[@placeholder='Enter phone number']");
 
-private By designation =
-        By.xpath("//label[normalize-space()='Designation']/following::input[1]");
+    private By designation =
+            By.xpath("//input[@placeholder='Enter designation']");
 
-private By department =
-        By.xpath("//label[normalize-space()='Department']/following::input[1]");
+    private By department =
+            By.xpath("//input[@placeholder='Enter department']");
 
-private By createEmployeeBtn =
-        By.xpath("//button[normalize-space()='Create Employee']");
+    private By createEmployeeBtn =
+            By.xpath("//button[normalize-space()='Create Employee']");
 
-private By cancelBtn =
-        By.xpath("//button[normalize-space()='Cancel']");
+    private By cancelBtn =
+            By.xpath("//button[normalize-space()='Cancel']");
+
     private void enterText(By locator, String value) {
-        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-        element.clear();
-        element.sendKeys(value);
+        try {
+            WebElement element = wait.until(
+                    ExpectedConditions.elementToBeClickable(locator)
+            );
+
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].scrollIntoView({block:'center'});",
+                    element
+            );
+
+            Thread.sleep(300);
+
+            element.click();
+            element.sendKeys(Keys.CONTROL + "a");
+            element.sendKeys(Keys.DELETE);
+            element.sendKeys(value);
+
+            Thread.sleep(300);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to enter text: " + value, e);
+        }
     }
 
     private void clickJS(By locator) {
-        WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+        try {
+            WebElement element = wait.until(
+                    ExpectedConditions.elementToBeClickable(locator)
+            );
+
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].scrollIntoView({block:'center'});",
+                    element
+            );
+
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].click();",
+                    element
+            );
+
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to click element: " + locator, e);
+        }
     }
 
     private void selectDropdownValue(By dropdown, String value) {
         try {
-            WebElement dropdownElement = wait.until(ExpectedConditions.elementToBeClickable(dropdown));
+            WebElement dropdownElement = wait.until(
+                    ExpectedConditions.elementToBeClickable(dropdown)
+            );
 
             ((JavascriptExecutor) driver).executeScript(
                     "arguments[0].scrollIntoView({block:'center'});",
@@ -67,13 +109,17 @@ private By cancelBtn =
                     "arguments[0].click();",
                     dropdownElement
             );
+
+            Thread.sleep(500);
 
             By optionLocator = By.xpath(
                     "//*[(@role='option' or @role='menuitem' or @cmdk-item='' or contains(@class,'SelectItem'))" +
                     " and normalize-space(.)='" + value + "']"
             );
 
-            WebElement option = wait.until(ExpectedConditions.elementToBeClickable(optionLocator));
+            WebElement option = wait.until(
+                    ExpectedConditions.elementToBeClickable(optionLocator)
+            );
 
             ((JavascriptExecutor) driver).executeScript(
                     "arguments[0].scrollIntoView({block:'center'});",
@@ -84,6 +130,8 @@ private By cancelBtn =
                     "arguments[0].click();",
                     option
             );
+
+            Thread.sleep(500);
 
         } catch (Exception e) {
             throw new RuntimeException("Dropdown value not selected: " + value, e);
@@ -92,80 +140,74 @@ private By cancelBtn =
 
     public boolean isCreateEmployeePageOpened() {
         try {
-            return wait.until(ExpectedConditions.visibilityOfElementLocated(pageTitle)).isDisplayed();
+            return wait.until(
+                    ExpectedConditions.visibilityOfElementLocated(pageTitle)
+            ).isDisplayed();
         } catch (Exception e) {
             return false;
         }
     }
 
     public boolean areAllFieldsVisible() {
-    return isElementVisible(organizationDropdown)
-            && isElementVisible(plantDropdown)
-            && isElementVisible(employeeName)
-            && isElementVisible(employeeEmail)
-            && isElementVisible(phoneNumber)
-            && isElementVisible(designation)
-            && isElementVisible(department)
-            && isElementVisible(createEmployeeBtn)
-            && isElementVisible(cancelBtn);
-}
-public void clickPlantDropdown() {
-
-    WebElement plant = wait.until(
-            ExpectedConditions.elementToBeClickable(plantDropdown)
-    );
-
-    ((JavascriptExecutor) driver).executeScript(
-            "arguments[0].scrollIntoView({block:'center'});",
-            plant
-    );
-
-    ((JavascriptExecutor) driver).executeScript(
-            "arguments[0].click();",
-            plant
-    );
-}
-public boolean isPlantDropdownEnabled() {
-    try {
-        WebElement plant = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(plantDropdown)
-        );
-
-        return plant.isDisplayed() && plant.isEnabled();
-
-    } catch (Exception e) {
-        return false;
+        return isElementVisible(organizationDropdown)
+                && isElementVisible(plantDropdown)
+                && isElementVisible(employeeName)
+                && isElementVisible(employeeEmail)
+                && isElementVisible(phoneNumber)
+                && isElementVisible(designation)
+                && isElementVisible(department)
+                && isElementVisible(createEmployeeBtn)
+                && isElementVisible(cancelBtn);
     }
-}
-private boolean isElementVisible(By locator) {
-    try {
-        WebElement element = wait.until(
-                ExpectedConditions.presenceOfElementLocated(locator)
-        );
 
-        ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].scrollIntoView({block:'center'});",
-                element
-        );
+    private boolean isElementVisible(By locator) {
+        try {
+            WebElement element = wait.until(
+                    ExpectedConditions.presenceOfElementLocated(locator)
+            );
 
-        return wait.until(
-                ExpectedConditions.visibilityOf(element)
-        ).isDisplayed();
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].scrollIntoView({block:'center'});",
+                    element
+            );
 
-    } catch (Exception e) {
-        System.out.println("Field not visible: " + locator);
-        return false;
+            return wait.until(
+                    ExpectedConditions.visibilityOf(element)
+            ).isDisplayed();
+
+        } catch (Exception e) {
+            System.out.println("Field not visible: " + locator);
+            return false;
+        }
     }
-}
 
     public void openOrganizationDropdown() {
         clickJS(organizationDropdown);
     }
 
+    public void clickPlantDropdown() {
+        clickJS(plantDropdown);
+    }
+
+    public boolean isPlantDropdownEnabled() {
+        try {
+            WebElement plant = wait.until(
+                    ExpectedConditions.visibilityOfElementLocated(plantDropdown)
+            );
+
+            return plant.isDisplayed() && plant.isEnabled();
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public boolean isDropdownOptionVisible(String value) {
         try {
             By option = By.xpath("//*[normalize-space()='" + value + "']");
-            return wait.until(ExpectedConditions.visibilityOfElementLocated(option)).isDisplayed();
+            return wait.until(
+                    ExpectedConditions.visibilityOfElementLocated(option)
+            ).isDisplayed();
         } catch (Exception e) {
             return false;
         }
@@ -185,16 +227,14 @@ private boolean isElementVisible(By locator) {
         selectOrganization("Exide Industries");
 
         wait.until(ExpectedConditions.elementToBeClickable(plantDropdown));
-        selectPlant("Exide_plant");
+
+        selectPlant("Exide Plant");
 
         enterText(employeeName, "Employee " + time);
         enterText(employeeEmail, "employee" + time + "@gmail.com");
         enterText(phoneNumber, "9876543210");
-
-        try {
-            enterText(designation, "QA Tester");
-        } catch (Exception ignored) {
-        }
+        enterText(designation, "QA Tester");
+        enterText(department, "Quality Assurance");
     }
 
     public void clickCreateEmployee() {
@@ -217,4 +257,92 @@ private boolean isElementVisible(By locator) {
             return false;
         }
     }
+    public void fillAllValidEmployeeData() {
+    long time = System.currentTimeMillis();
+
+    selectOrganization("Exide Industries");
+    wait.until(ExpectedConditions.elementToBeClickable(plantDropdown));
+    selectPlant("Exide Plant");
+
+    enterText(employeeName, "Employee " + time);
+    enterText(employeeEmail, "employee" + time + "@gmail.com");
+    enterText(phoneNumber, "9876543210");
+    enterText(designation, "QA Tester");
+    enterText(department, "Quality Assurance");
+}
+
+public boolean isValidationDisplayed() {
+    try {
+        String text = driver.getPageSource().toLowerCase();
+
+        return text.contains("required")
+                || text.contains("invalid")
+                || text.contains("already")
+                || text.contains("duplicate")
+                || text.contains("must")
+                || text.contains("error")
+                || text.contains("please");
+    } catch (Exception e) {
+        return false;
+    }
+}
+
+public void scrollToFirstValidationError() {
+    try {
+        By errorLocator = By.xpath(
+                "//*[contains(@class,'error') " +
+                "or contains(@class,'invalid') " +
+                "or contains(@class,'destructive') " +
+                "or contains(text(),'Required') " +
+                "or contains(text(),'required') " +
+                "or contains(text(),'Invalid') " +
+                "or contains(text(),'invalid')]"
+        );
+
+        WebElement error = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(errorLocator)
+        );
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block:'center'});",
+                error
+        );
+
+    } catch (Exception e) {
+        ((JavascriptExecutor) driver).executeScript("window.scrollTo(0,0);");
+    }
+}
+
+public void submitAndScrollToError() {
+    clickCreateEmployee();
+    scrollToFirstValidationError();
+}
+
+public void enterEmployeeNameOnly(String value) {
+    enterText(employeeName, value);
+}
+
+public void enterEmployeeEmailOnly(String value) {
+    enterText(employeeEmail, value);
+}
+
+public void enterPhoneNumberOnly(String value) {
+    enterText(phoneNumber, value);
+}
+
+public void enterDesignationOnly(String value) {
+    enterText(designation, value);
+}
+
+public void enterDepartmentOnly(String value) {
+    enterText(department, value);
+}
+
+public void selectValidOrganization() {
+    selectOrganization("Exide Industries");
+}
+
+public void selectValidPlant() {
+    selectPlant("Exide Plant");
+}
 }

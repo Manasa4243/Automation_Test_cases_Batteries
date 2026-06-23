@@ -125,8 +125,8 @@ public void TC_EMP_ROLE_005_verifyRoleDropdownLoading() {
 public void TC_EMP_ROLE_006_verifyAddRoleFunctionality() {
 
     openEmployeeRoleAssignmentForm();
-employeeRolePage.selectOrganization("Battery_Org");
-    employeeRolePage.selectEmployee("Manufacturer_admin");
+employeeRolePage.selectOrganization("Exide Industries");
+    employeeRolePage.selectEmployee("Prabha");
 
     employeeRolePage.openRoleDropdown();
     // fillRequiredDropdownFlow();
@@ -225,20 +225,18 @@ public void TC_EMP_ROLE_011_verifyCancelFunctionality() {
     );
 }
 
-  @Test
+   @Test
 public void TC_EMP_ROLE_012_verifyCreatedAssignmentInList() {
 
     openEmployeeRoleAssignmentForm();
 
     // fillRequiredDropdownFlow();
 
-employeeRolePage.selectOrganization("Battery_Org");
-    employeeRolePage.selectEmployee("Manufacturer_admin");
+    employeeRolePage.selectOrganization("Exide Industries");
+    employeeRolePage.selectEmployee("Prabha");
 
     employeeRolePage.selectRole("Organization Admin");
     employeeRolePage.enterEffectiveDates("01-06-2026", "30-06-2026");
-
-
     employeeRolePage.clickCreateAssignment();
 
     Assert.assertTrue(

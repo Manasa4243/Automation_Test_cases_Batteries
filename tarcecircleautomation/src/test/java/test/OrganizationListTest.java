@@ -244,4 +244,18 @@ public void TC_ORG_LIST_011_verifyInactiveFilter() {
                 "Partial search result is not displayed"
         );
     }
+    @Test
+public void TC_ORG_LIST_013_DeactivateOrganization() {
+
+    loginToApplication();
+
+    OrganizationListPage organizationListPage = openOrganizationListPage();
+
+    organizationListPage.deactivateOrganization("Exide");
+
+//     Assert.assertTrue(
+//             organizationListPage.isOrganizationDeactivated("Exide"),
+//             "Organization was not deactivated successfully"
+//     );
+}
 }

@@ -1,6 +1,10 @@
 package pages;
-import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.Actions;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -18,19 +22,21 @@ public class EmployeeRoleAssignmentPage {
             By.xpath("//h1[contains(normalize-space(),'Add Employee Role Assignment')]");
 
     private By organizationDropdown =
-            By.xpath("//label[normalize-space()='Organization']/following::button[1]");
+            By.xpath("//*[normalize-space()='Select Organization']");
 
     private By employeeDropdown =
-            By.xpath("//label[normalize-space()='Employee']/following::button[1]");
+            By.xpath("//*[normalize-space()='Select Organization First' or normalize-space()='Select Employee']");
 
-    private By roleDropdown =
-            By.xpath("//label[normalize-space()='Role']/following::button[1]");
+    private By plantDropdown =
+            By.xpath("(//*[contains(@class,'select') or @role='combobox'])[3] | //label[normalize-space()='Plant Name']/following::*[@role='combobox'][1]");
 
+  private By roleDropdown =
+        By.xpath("//button[@role='combobox' and .//span[@data-slot='select-value' and (normalize-space()='Select role' or normalize-space()='Organization Admin' or normalize-space()='Super Admin')]]");
     private By effectiveFrom =
-            By.xpath("//label[contains(normalize-space(),'Effective From')]/following::input[1]");
+            By.xpath("//input[@placeholder='dd-mm-yyyy'][1]");
 
     private By effectiveTo =
-            By.xpath("//label[contains(normalize-space(),'Effective To')]/following::input[1]");
+            By.xpath("(//input[@placeholder='dd-mm-yyyy'])[2]");
 
     private By addRoleBtn =
             By.xpath("//button[contains(normalize-space(),'Add Role')]");
@@ -48,58 +54,60 @@ public class EmployeeRoleAssignmentPage {
             By.xpath("//*[contains(normalize-space(),'Assignment #')]");
 
     private void jsClick(By locator) {
-        WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
+        try {
+            WebElement element = wait.until(
+                    ExpectedConditions.elementToBeClickable(locator)
+            );
 
-        ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].scrollIntoView({block:'center'});",
-                element
-        );
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].scrollIntoView({block:'center'});",
+                    element
+            );
 
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].click();",
+                    element
+            );
+
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to click element: " + locator, e);
+        }
     }
 
     private void enterText(By locator, String value) {
+        try {
+            WebElement element = wait.until(
+                    ExpectedConditions.presenceOfElementLocated(locator)
+            );
 
-    try {
-        WebElement element = wait.until(
-                ExpectedConditions.presenceOfElementLocated(locator)
-        );
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].scrollIntoView({block:'center'});",
+                    element
+            );
 
-        ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].scrollIntoView({block:'center'});",
-                element
-        );
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].removeAttribute('readonly');",
+                    element
+            );
 
-        ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].removeAttribute('readonly');",
-                element
-        );
+            element.click();
+            element.sendKeys(Keys.CONTROL + "a");
+            element.sendKeys(Keys.DELETE);
+            element.sendKeys(value);
 
-        ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].value='';",
-                element
-        );
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].dispatchEvent(new Event('input', { bubbles: true }));" +
+                    "arguments[0].dispatchEvent(new Event('change', { bubbles: true }));" +
+                    "arguments[0].dispatchEvent(new Event('blur', { bubbles: true }));",
+                    element
+            );
 
-        ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].value=arguments[1];",
-                element,
-                value
-        );
-
-        ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].dispatchEvent(new Event('input', { bubbles: true }));" +
-                "arguments[0].dispatchEvent(new Event('change', { bubbles: true }));" +
-                "arguments[0].dispatchEvent(new Event('blur', { bubbles: true }));",
-                element
-        );
-
-    } catch (Exception e) {
-        throw new RuntimeException("Unable to enter text/date: " + value, e);
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to enter text/date: " + value, e);
+        }
     }
-}
 
- private void selectDropdownValue(By dropdown, String value) {
-
+    private void selectDropdownValue(By dropdown, String value) {
     try {
         WebElement dropdownElement = wait.until(
                 ExpectedConditions.elementToBeClickable(dropdown)
@@ -115,37 +123,17 @@ public class EmployeeRoleAssignmentPage {
                 dropdownElement
         );
 
-        By searchInput = By.xpath(
-                "//input[@role='combobox'] | //input[contains(@placeholder,'Search')] | //input"
+        Thread.sleep(700);
+
+        By optionLocator = By.xpath(
+                "//*[@role='option' and normalize-space()='" + value + "']" +
+                " | //*[@role='menuitem' and normalize-space()='" + value + "']" +
+                " | //*[@data-slot='select-item' and normalize-space()='" + value + "']" +
+                " | //*[normalize-space()='" + value + "']"
         );
-
-        try {
-            WebElement input = wait.until(
-                    ExpectedConditions.visibilityOfElementLocated(searchInput)
-            );
-
-            input.clear();
-            input.sendKeys(value);
-
-            Thread.sleep(1000);
-
-        } catch (Exception ignored) {
-            // If dropdown has no search input, directly select option
-        }
-
-       By optionLocator = By.xpath(
-        "//div[@role='option' and normalize-space()='Battery_Org']" +
-        " | //div[normalize-space()='Battery_Org']" +
-        " | //span[normalize-space()='Battery_Org']"
-);
 
         WebElement option = wait.until(
                 ExpectedConditions.elementToBeClickable(optionLocator)
-        );
-
-        ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].scrollIntoView({block:'center'});",
-                option
         );
 
         ((JavascriptExecutor) driver).executeScript(
@@ -153,7 +141,7 @@ public class EmployeeRoleAssignmentPage {
                 option
         );
 
-        wait.until(ExpectedConditions.textToBePresentInElementLocated(dropdown, value));
+        Thread.sleep(700);
 
     } catch (Exception e) {
         throw new RuntimeException("Dropdown value not selected: " + value, e);
@@ -162,7 +150,9 @@ public class EmployeeRoleAssignmentPage {
 
     public boolean isPageOpened() {
         try {
-            return wait.until(ExpectedConditions.visibilityOfElementLocated(pageTitle)).isDisplayed();
+            return wait.until(
+                    ExpectedConditions.visibilityOfElementLocated(pageTitle)
+            ).isDisplayed();
         } catch (Exception e) {
             return false;
         }
@@ -191,14 +181,24 @@ public class EmployeeRoleAssignmentPage {
         jsClick(organizationDropdown);
     }
 
+    public void openEmployeeDropdown() {
+        jsClick(employeeDropdown);
+    }
+
     public void openRoleDropdown() {
         jsClick(roleDropdown);
+    }
+
+    public void openPlantDropdown() {
+        jsClick(plantDropdown);
     }
 
     public boolean isDropdownOptionVisible(String value) {
         try {
             By option = By.xpath("//*[normalize-space()='" + value + "' or contains(normalize-space(),'" + value + "')]");
-            return wait.until(ExpectedConditions.visibilityOfElementLocated(option)).isDisplayed();
+            return wait.until(
+                    ExpectedConditions.visibilityOfElementLocated(option)
+            ).isDisplayed();
         } catch (Exception e) {
             return false;
         }
@@ -208,45 +208,11 @@ public class EmployeeRoleAssignmentPage {
         selectDropdownValue(organizationDropdown, organizationName);
     }
 
-   public void selectEmployee(String employeeName) {
-
-    try {
-        WebElement dropdown = wait.until(
-                ExpectedConditions.elementToBeClickable(employeeDropdown)
-        );
-
-        ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].click();",
-                dropdown
-        );
-
-        Thread.sleep(1000);
-
-        By employeeOption = By.xpath(
-                "//*[normalize-space()='" + employeeName + "']"
-        );
-
-        WebElement option = wait.until(
-                ExpectedConditions.elementToBeClickable(employeeOption)
-        );
-
-        ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].scrollIntoView({block:'center'});",
-                option
-        );
-
-        ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].click();",
-                option
-        );
-
-        Thread.sleep(1000);
-
-    } catch (Exception e) {
-        throw new RuntimeException("Employee not selected: " + employeeName, e);
+    public void selectEmployee(String employeeName) {
+        selectDropdownValue(employeeDropdown, employeeName);
     }
-}
-   public void selectRole(String roleName) {
+
+    public void selectRole(String roleName) {
 
     try {
         WebElement dropdown = wait.until(
@@ -263,10 +229,13 @@ public class EmployeeRoleAssignmentPage {
                 dropdown
         );
 
-        Thread.sleep(1000);
+        Thread.sleep(700);
 
         By roleOption = By.xpath(
-                "//*[normalize-space()='" + roleName + "']"
+                "//div[normalize-space()='" + roleName + "']" +
+                " | //span[normalize-space()='" + roleName + "']" +
+                " | //*[@role='option' and normalize-space()='" + roleName + "']" +
+                " | //*[normalize-space()='" + roleName + "']"
         );
 
         WebElement option = wait.until(
@@ -274,57 +243,54 @@ public class EmployeeRoleAssignmentPage {
         );
 
         ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].scrollIntoView({block:'center'});",
-                option
-        );
-
-        ((JavascriptExecutor) driver).executeScript(
                 "arguments[0].click();",
                 option
         );
 
-        Thread.sleep(1000);
+        Thread.sleep(700);
 
     } catch (Exception e) {
         throw new RuntimeException("Role not selected: " + roleName, e);
     }
 }
-public boolean isEmployeeSelected(String employeeName) {
-    try {
-        WebElement employee = wait.until(
-                ExpectedConditions.presenceOfElementLocated(employeeDropdown)
-        );
-
-        return employee.getText().contains(employeeName);
-
-    } catch (Exception e) {
-        return false;
+    public void selectPlant(String plantName) {
+        selectDropdownValue(plantDropdown, plantName);
     }
-}
-   public boolean isEmployeeDropdownEnabled() {
 
-    try {
+    public boolean isEmployeeSelected(String employeeName) {
+        try {
+            WebElement employee = wait.until(
+                    ExpectedConditions.presenceOfElementLocated(employeeDropdown)
+            );
 
-        Thread.sleep(3000);
+            return employee.getText().contains(employeeName);
 
-        WebElement employee = wait.until(
-                ExpectedConditions.presenceOfElementLocated(employeeDropdown)
-        );
-
-        String disabled = employee.getAttribute("disabled");
-        String ariaDisabled = employee.getAttribute("aria-disabled");
-        String className = employee.getAttribute("class");
-
-        return (disabled == null || disabled.equals("false"))
-                && (ariaDisabled == null || ariaDisabled.equals("false"))
-                && !className.contains("disabled")
-                && !className.contains("opacity-50");
-
-    } catch (Exception e) {
-
-        return false;
+        } catch (Exception e) {
+            return false;
+        }
     }
-}
+
+    public boolean isEmployeeDropdownEnabled() {
+        try {
+            Thread.sleep(1500);
+
+            WebElement employee = wait.until(
+                    ExpectedConditions.presenceOfElementLocated(employeeDropdown)
+            );
+
+            String disabled = employee.getAttribute("disabled");
+            String ariaDisabled = employee.getAttribute("aria-disabled");
+            String className = employee.getAttribute("class");
+
+            return (disabled == null || disabled.equals("false"))
+                    && (ariaDisabled == null || ariaDisabled.equals("false"))
+                    && !className.contains("disabled")
+                    && !className.contains("opacity-50");
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     public void clickAddRole() {
         jsClick(addRoleBtn);
@@ -337,7 +303,6 @@ public boolean isEmployeeSelected(String employeeName) {
             return false;
         }
     }
-    
 
     public void clickPrimaryRole() {
         jsClick(primaryRoleBtn);
@@ -345,7 +310,9 @@ public boolean isEmployeeSelected(String employeeName) {
 
     public boolean isPrimaryRoleSelected() {
         try {
-            WebElement primary = wait.until(ExpectedConditions.visibilityOfElementLocated(primaryRoleBtn));
+            WebElement primary = wait.until(
+                    ExpectedConditions.visibilityOfElementLocated(primaryRoleBtn)
+            );
             return primary.isDisplayed();
         } catch (Exception e) {
             return false;
@@ -358,10 +325,10 @@ public boolean isEmployeeSelected(String employeeName) {
     }
 
     public void fillValidAssignmentData() {
-        selectOrganization("Battery_Org");
+        selectOrganization("Exide Industries");
 
         wait.until(ExpectedConditions.elementToBeClickable(employeeDropdown));
-        selectEmployee("Manufaturer_admin");
+        selectEmployee("Prabha");
 
         selectRole("Organization Admin");
 
@@ -402,4 +369,15 @@ public boolean isEmployeeSelected(String employeeName) {
             return false;
         }
     }
+    public void printRoleDropdownValues() {
+    jsClick(roleDropdown);
+
+    java.util.List<WebElement> options = driver.findElements(
+            By.xpath("//*[@role='option' or @role='menuitem' or @data-slot='select-item' or contains(@class,'SelectItem')]")
+    );
+
+    for (WebElement option : options) {
+        System.out.println("Role option: " + option.getText());
+    }
+}
 }

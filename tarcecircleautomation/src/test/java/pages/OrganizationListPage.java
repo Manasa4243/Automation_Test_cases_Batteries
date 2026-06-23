@@ -8,7 +8,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
+import org.openqa.selenium.interactions.Actions;
 import java.util.List;
 
 public class OrganizationListPage {
@@ -57,6 +57,87 @@ public class OrganizationListPage {
             By.xpath("//button[contains(normalize-space(),'Active')]");
 private By inactiveFilter =
         By.xpath("//button[contains(normalize-space(),'Inactive')]");
+        private By deleteOption =
+        By.xpath("//*[normalize-space()='Deactivate' or normalize-space()='Deactivate']");
+
+public void deactivateOrganization(String orgName) {
+
+    try {
+        By orgRow = By.xpath(
+                "//table//tbody//tr[.//*[contains(normalize-space(),'" + orgName + "')]]"
+        );
+
+        WebElement row = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(orgRow)
+        );
+
+        WebElement threeDots = row.findElement(
+                By.xpath(".//button[@data-slot='dropdown-menu-trigger' and @aria-haspopup='menu']")
+        );
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block:'center'});",
+                threeDots
+        );
+
+        Thread.sleep(500);
+
+        new Actions(driver)
+                .moveToElement(threeDots)
+                .pause(500)
+                .click()
+                .perform();
+
+        Thread.sleep(1000);
+
+        WebElement deactivateOption = wait.until(
+                ExpectedConditions.elementToBeClickable(
+                        By.xpath("//*[@role='menuitem' and normalize-space()='Deactivate'] | //*[@data-slot='dropdown-menu-item' and normalize-space()='Deactivate'] | //*[normalize-space()='Deactivate']")
+                )
+        );
+
+        new Actions(driver)
+                .moveToElement(deactivateOption)
+                .pause(300)
+                .click()
+                .perform();
+
+        WebElement confirmBtn = wait.until(
+                ExpectedConditions.elementToBeClickable(
+                        By.xpath("//button[contains(normalize-space(),'Confirm') or contains(normalize-space(),'Deactivate') or contains(normalize-space(),'Delete')]")
+                )
+        );
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].click();",
+                confirmBtn
+        );
+
+        Thread.sleep(2000);
+        driver.navigate().refresh();
+        Thread.sleep(2000);
+
+    } catch (Exception e) {
+        throw new RuntimeException("Failed to deactivate organization: " + orgName, e);
+    }
+}
+public boolean isOrganizationDeactivated(String orgName) {
+    try {
+        driver.navigate().refresh();
+        Thread.sleep(2000);
+
+        By inactiveStatus = By.xpath(
+                "//table//tbody//tr[td[contains(normalize-space(),'" + orgName + "')]]//*[contains(normalize-space(),'Inactive')]"
+        );
+
+        return wait.until(
+                ExpectedConditions.visibilityOfElementLocated(inactiveStatus)
+        ).isDisplayed();
+
+    } catch (Exception e) {
+        return false;
+    }
+}
     public boolean isOrganizationListPageOpened() {
         try {
             return wait.until(ExpectedConditions.visibilityOfElementLocated(organizationListPage)).isDisplayed();

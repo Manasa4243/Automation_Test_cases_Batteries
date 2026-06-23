@@ -73,7 +73,27 @@ private By calculatorLink =
 
 private By calculateBatchBtn =
         By.xpath("//button[contains(normalize-space(),'Calculate')]");
+private By eolInstructionsLink =
+        By.xpath("//span[normalize-space()='EOL Instructions'] | //a[contains(@href,'eol')]");
 
+private By addEolInstructionBtn =
+        By.xpath("//button[contains(normalize-space(),'Add')] | //button[contains(normalize-space(),'Create')]");
+private By batchProductMenu =
+        By.xpath("//span[normalize-space()='Batch+Product'] | //a[contains(@href,'batch-product')]");
+
+public void openBatchProductPage() {
+    clickDppManagement();
+    jsClick(batchProductMenu);
+}
+public void clickEolInstructions() {
+    jsClick(eolInstructionsLink);
+}
+
+public void openAddEolInstructionPage() {
+    clickDppManagement();
+    clickEolInstructions();
+    jsClick(addEolInstructionBtn);
+}
 public void clickCalculator() {
     jsClick(calculatorLink);
 }
@@ -178,13 +198,17 @@ public void openCreateBatteryPage() {
     }
 
     public void clickOrganizations() {
-        jsClick(organizationsLink);
 
-        wait.until(ExpectedConditions.or(
-                ExpectedConditions.urlContains("organizations"),
-                ExpectedConditions.presenceOfElementLocated(createOrganizationBtn)
-        ));
-    }
+    jsClick(organizationsLink);
+
+    wait.until(ExpectedConditions.urlContains("organizations"));
+
+    driver.navigate().refresh();
+
+    wait.until(ExpectedConditions.visibilityOfElementLocated(
+            By.xpath("//h1[normalize-space()='Organizations']")
+    ));
+}
 public void clickAnalytics() {
 
     try {
@@ -231,6 +255,24 @@ public void openAnalyticsPage() {
             )
     ));
 }
+private By reportsAndAuditsMenu =
+        By.xpath("//span[normalize-space()='Reports and Audits'] | //span[normalize-space()='Reports & Audits']");
+
+private By reportsLink =
+        By.xpath("//span[normalize-space()='Reports'] | //a[contains(@href,'reports')]");
+
+public void openReportsPage() {
+    waitForSidebarAfterLogin();
+    jsClick(reportsAndAuditsMenu);
+    jsClick(reportsLink);
+
+    wait.until(ExpectedConditions.or(
+            ExpectedConditions.urlContains("reports"),
+            ExpectedConditions.presenceOfElementLocated(
+                    By.xpath("//h1[contains(normalize-space(),'Reports')]")
+            )
+    ));
+}
     public void openOrganizationsPage() {
         clickOrganizationManagement();
         clickOrganizations();
@@ -247,10 +289,20 @@ public void openAnalyticsPage() {
         ));
     }
 
-    public void openCreateOrganizationPage() {
-        openOrganizationsPage();
-        clickCreateOrganization();
-    }
+ public void openCreateOrganizationPage() throws InterruptedException {
+
+    openOrganizationsPage();
+
+    clickCreateOrganization();
+
+    System.out.println("Current URL: " + driver.getCurrentUrl());
+
+    Thread.sleep(3000);
+
+    wait.until(ExpectedConditions.visibilityOfElementLocated(
+            By.cssSelector("input[data-testid='org-name-input']")
+    ));
+}
 
     public void clickPlants() {
         jsClick(plantsLink);
